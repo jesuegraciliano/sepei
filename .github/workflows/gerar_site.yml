@@ -1,0 +1,36 @@
+name: Gerar e Publicar Artigo
+
+on:
+  schedule:
+    - cron: '0 11 * * *'  # Todos os dias às 08:00 BRT
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clonar repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Instalar dependências
+        run: |
+          pip install --upgrade pip
+          pip install crewai==0.28.8 crewai_tools==0.1.6 langchain_community==0.0.29 openai serperdev requests
+
+      - name: Executar script de geração
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          SERPER_API_KEY: ${{ secrets.SERPER_API_KEY }}
+        run: python gerar_artigo_site.py
+
+      - name: Publicar no GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site
