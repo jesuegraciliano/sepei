@@ -2,7 +2,7 @@ name: Gerar e Publicar Artigo
 
 on:
   schedule:
-    - cron: '0 11 * * *'  # Todos os dias às 08:00 BRT
+    - cron: '0 11 * * *'
   workflow_dispatch:
 
 jobs:
@@ -21,16 +21,11 @@ jobs:
       - name: Instalar dependências
         run: |
           pip install --upgrade pip
-          pip install crewai==0.28.8 crewai_tools==0.1.6 langchain_community==0.0.29 openai serperdev requests
+          pip install crewai==0.28.8 crewai_tools==0.1.6 langchain_community==0.0.29 openai requests
+          pip install git+https://github.com/ClebertCode/serperdev.git
 
       - name: Executar script de geração
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           SERPER_API_KEY: ${{ secrets.SERPER_API_KEY }}
-        run: python gerar_artigo_site.py
-
-      - name: Publicar no GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./site
+        run: python gerar
